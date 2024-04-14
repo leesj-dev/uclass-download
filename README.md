@@ -5,14 +5,23 @@
 온라인 LMS의 동영상을 다운로드하는 것은 그리 어려운 일이 아닙니다. 개발자 도구의 Network 탭에서 동영상의 URL을 찾아서 다운로드를 하면 됩니다. 그러나 이 방법은 강의영상에 일일이 들어가서 동영상의 URL을 찾는 것이 번거롭다는 단점이 있습니다. 이 프로그램은 Selenium을 이용하여 이러한 과정을 자동화하였습니다.
 
 ## 이용 방법
-1. pip를 이용하여 `python-dotenv`, `selenium`, `webdriver-manager` 패키지를 설치해줍니다.
-`pip install python-dotenv selenium webdriver-manager`
-2. `main.py`가 있는 디렉토리에 `.env` 파일을 생성하고 크레덴셜을 넣습니다.
+1. 이 repository를 clone합니다.
+```
+git clone https://github.com/leesj-dev/uclass-download.git
+```
+
+2. pip를 이용하여 `python-dotenv`, `selenium`, `webdriver-manager` 패키지를 설치해줍니다.
+```
+pip install python-dotenv selenium webdriver-manager
+```
+
+3. `main.py`가 있는 디렉토리에 `.env` 파일을 생성하고 크레덴셜을 넣습니다.
 ```
 id = (아이디를 여기에 넣습니다)
 pw = (비밀번호를 여기에 넣습니다)
 ```
-3. `main.py`에 들어가서 `configs`를 수정해줍니다. `LINK`는 크롤링할 강좌 과목의 링크, `SECTIONS`는 대단원 블럭 중 크롤링할 블럭의 번호, `SAVEPATH`는 파일 저장 경로입니다.
+
+4. `main.py`에 들어가서 `configs`를 수정해줍니다. `LINK`는 크롤링할 강좌 과목의 링크, `SECTIONS`는 대단원 블럭 중 크롤링할 블럭의 번호, `SAVEPATH`는 파일 저장 경로입니다.
 ```
 LINK = "https://lcme.ulsan.ac.kr/course/view.php?id=9096"
 SECTIONS = [2, 3, 4]
