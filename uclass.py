@@ -12,8 +12,8 @@ import requests
 
 # configs
 LINK = "https://ulms.ulsan.ac.kr/course/view.php?id=40634"
-SECTIONS = [1, 2, 3, 4, 5, 6, 7]
-SAVEPATH = "/Users/leesj/Documents/대학교/예과 2학년/선택과정/병원 밖 진료실"
+SECTIONS = [5, 6, 7]
+SAVEPATH = "/Users/leesj/Documents/대학교/예과 2학년/선택과정"
 
 # load environment variables
 load_dotenv()
@@ -29,6 +29,7 @@ driver.get(LINK)
 driver.implicitly_wait(2)
 
 # login
+driver.find_element(By.CSS_SELECTOR, ".btn.btn-sso").click()
 driver.find_element(By.ID, "id").send_keys(login_id)
 driver.find_element(By.ID, "pw").send_keys(login_pw)
 driver.find_element(By.CSS_SELECTOR, ".login.btn-login").send_keys(Keys.RETURN)
