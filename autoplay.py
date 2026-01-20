@@ -11,7 +11,7 @@ import re
 
 # configs
 LINK = "https://lcme.ulsan.ac.kr/course/view.php?id=9175"
-SECTIONS = [1, 2, 3, 4, 5, 6, 7]
+SECTIONS = None  # None이면 모든 섹션을 자동으로 찾습니다. 특정 섹션만 원하면 [1, 2, 3] 형태로 지정하세요.
 
 # load environment variables
 load_dotenv()
@@ -30,6 +30,22 @@ driver.find_element(By.ID, "input-username").send_keys(login_id)
 driver.find_element(By.ID, "input-password").send_keys(login_pw)
 driver.find_element(By.XPATH, "//input[@type='submit']").send_keys(Keys.RETURN)
 time.sleep(2)
+
+# auto-detect sections if not specified
+if SECTIONS is None:
+    all_sections = driver.find_elements(By.CSS_SELECTOR, "li.section.main[id^='section-']")
+    SECTIONS = []
+    for section in all_sections:
+        section_id = section.get_attribute("id")
+        if section_id and section_id.startswith("section-"):
+            try:
+                section_num = int(section_id.replace("section-", ""))
+                if section_num > 0:  # section-0은 제외 (Course Summary)
+                    SECTIONS.append(section_num)
+            except ValueError:
+                pass
+    SECTIONS.sort()
+    print(f"자동으로 감지된 섹션: {SECTIONS}\n")
 
 
 def parse_time(time_str):
@@ -112,7 +128,7 @@ def wait_for_video_completion(driver):
                 break
 
             # Wait with a buffer time and periodic checks
-            check_interval = min(10, actual_wait_time / 2)
+            check_interval = min(5, actual_wait_time / 2)
             time.sleep(check_interval)
 
         except Exception as e:

@@ -11,7 +11,7 @@ import requests
 
 
 # configs
-LINK = "https://lcme.ulsan.ac.kr/course/view.php?id=9175"
+LINK = "https://ulms.ulsan.ac.kr/course/view.php?id=40630"
 SECTIONS = None  # None이면 모든 섹션을 자동으로 찾습니다. 특정 섹션만 원하면 [1, 2, 3] 형태로 지정하세요.
 SAVEPATH = "/Users/leesj/Documents/대학교/예과 2학년/선택과정/병원 밖 진료실"
 
@@ -29,9 +29,10 @@ driver.get(LINK)
 driver.implicitly_wait(2)
 
 # login
-driver.find_element(By.ID, "input-username").send_keys(login_id)
-driver.find_element(By.ID, "input-password").send_keys(login_pw)
-driver.find_element(By.XPATH, "//input[@type='submit']").send_keys(Keys.RETURN)
+driver.find_element(By.CSS_SELECTOR, ".btn.btn-sso").click()
+driver.find_element(By.ID, "id").send_keys(login_id)
+driver.find_element(By.ID, "pw").send_keys(login_pw)
+driver.find_element(By.CSS_SELECTOR, ".login.btn-login").send_keys(Keys.RETURN)
 time.sleep(2)
 
 # auto-detect sections if not specified
@@ -54,11 +55,11 @@ if SECTIONS is None:
 for i in SECTIONS:
     # get section XPATH and section name
     section = driver.find_element(By.ID, f"section-{i}")
-    section_name = section.find_element(By.XPATH, ".//h3[@class='sectionname']/a").get_attribute("innerText")
+    section_name = section.find_element(By.XPATH, ".//h3[@class='sectionname']/span/a").get_attribute("innerText")
     os.makedirs(os.path.join(SAVEPATH, section_name), exist_ok=True)
 
-    # get video list (only xncommons activities)
-    video_list = section.find_elements(By.XPATH, ".//ul[@class='section img-text']/li[contains(@class, 'xncommons')]")
+    # get video list
+    video_list = section.find_elements(By.XPATH, ".//ul[@class='section img-text']/li[contains(@class, 'activity')]")
 
     # for each video in the list
     for video in video_list:
