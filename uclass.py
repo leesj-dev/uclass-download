@@ -51,7 +51,9 @@ for i in SECTIONS:
             link_element = video.find_element(By.XPATH, ".//div[@class='activityinstance']/a")
             onclick_attr = link_element.get_attribute("onclick")
             video_link = onclick_attr.split("'")[1]
-            video_name = link_element.find_element(By.XPATH, ".//span[@class='instancename']").get_attribute("innerText").replace(" CMAKER", "").strip()
+            video_name_raw = link_element.find_element(By.XPATH, ".//span[@class='instancename']").text
+            video_name = video_name_raw.split("CMAKER")[0].strip()
+            video_name = video_name.replace("?", "").replace(":", "").replace("/", "-").replace("\\", "-").strip()
         except:  # 학습자료 등이 있을 경우 예외처리
             continue
 
