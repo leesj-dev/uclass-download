@@ -1,32 +1,66 @@
 # uclass-download
-울산대학교 온라인 LMS의 동영상들을 자동적으로 다운로드하는 Selenium 매크로입니다. 강좌의 전체 또는 일부 영상을 자동적으로 다운로드한 뒤 생성된 폴더에 동영상을 저장합니다. 이 프로그램은 영상자료가 아닌 음성자료, pdf 자료 등은 다운로드하지 않습니다.
+울산대학교 온라인 LMS의 동영상들을 자동적으로 다운로드하거나 자동 재생하는 Selenium 매크로입니다. 강좌의 전체 또는 일부 영상을 자동적으로 다운로드한 뒤 생성된 폴더에 동영상을 저장하거나, 영상을 순서대로 자동 재생하여 이수 처리할 수 있습니다.
 
 ## 개발 배경
-온라인 LMS의 동영상을 다운로드하는 것은 그리 어려운 일이 아닙니다. 개발자 도구의 Network 탭에서 동영상의 URL을 찾아서 다운로드를 하면 됩니다. 그러나 이 방법은 강의영상에 일일이 들어가서 동영상의 URL을 찾는 것이 번거롭다는 단점이 있습니다. 이 프로그램은 Selenium을 이용하여 이러한 과정을 자동화하였습니다.
+온라인 LMS의 동영상을 다운로드하는 것은 그리 어려운 일이 아닙니다. 개발자 도구의 Network 탭에서 동영상의 URL을 찾아서 다운로드를 하면 됩니다. 그러나 이 방법은 강의영상에 일일이 들어가서 동영상의 URL을 찾는 것이 번거롭다는 단점이 있습니다. 또한 여러 영상을 순서대로 재생하여 이수 처리하는 것도 번거로운 작업입니다. 이 프로그램은 Selenium을 이용하여 이러한 과정을 자동화하였습니다.
+
+## 프로그램 종류
+### 1. `lcme.py` (다운로드 - LCME)
+LCME 강좌의 동영상을 다운로드합니다. Network 로그를 분석하여 동영상 URL을 추출한 뒤 다운로드합니다.
+
+### 2. `uclass.py` (다운로드 - UCLASS)
+UCLASS 강좌의 동영상을 다운로드합니다. LCME와 동일한 방식으로 작동합니다.
+
+### 3. `autoplay.py` (자동 재생 - 강의작)
+LCME 강좌의 모든 동영상을 순서대로 자동 재생합니다. 각 영상의 재생 시간과 배속을 고려하여 완료까지 대기한 뒤 다음 영상으로 자동 이동합니다. 이미 100% 완료된 영상은 건너뜁니다.
 
 ## 이용 방법
+
+### 공통 설정
 1. 이 repository를 clone합니다.
 ```
 git clone https://github.com/leesj-dev/uclass-download.git
 ```
 
-2. pip를 이용하여 `python-dotenv`, `selenium`, `webdriver-manager` 패키지를 설치해줍니다.
+2. pip를 이용하여 필요한 패키지를 설치해줍니다.
 ```
-pip install python-dotenv selenium webdriver-manager
+pip install python-dotenv selenium webdriver-manager requests
 ```
 
-3. `main.py`가 있는 디렉토리에 `.env` 파일을 생성하고 크레덴셜을 넣습니다.
+3. 프로젝트 디렉토리에 `.env` 파일을 생성하고 크레덴셜을 넣습니다.
 ```
 id = (아이디를 여기에 넣습니다)
 pw = (비밀번호를 여기에 넣습니다)
 ```
 
-4. `main.py`에 들어가서 `configs`를 수정해줍니다. `LINK`는 크롤링할 강좌 과목의 링크, `SECTIONS`는 대단원 블럭 중 크롤링할 블럭의 번호, `SAVEPATH`는 파일 저장 경로입니다.
-```
+### 다운로드 사용법 (lcme.py / uclass.py)
+4. 사용할 파일(`lcme.py` 또는 `uclass.py`)에 들어가서 `configs`를 수정해줍니다. `LINK`는 크롤링할 강좌 과목의 링크, `SECTIONS`는 대단원 블럭 중 크롤링할 블럭의 번호, `SAVEPATH`는 파일 저장 경로입니다.
+```python
 LINK = "https://lcme.ulsan.ac.kr/course/view.php?id=9096"
 SECTIONS = [2, 3, 4]
 SAVEPATH = "/Users/leesj/Documents/대학교/예과 2학년 1학기/세포와대사"
 ```
+
+5. 프로그램을 실행합니다.
+```
+python lcme.py  # LCME 강좌
+# 또는
+python uclass.py  # UCLASS 강좌
+```
+
+### 자동 재생 사용법 (autoplay.py)
+4. `autoplay.py`에 들어가서 `configs`를 수정해줍니다. `LINK`는 강좌 링크, `SECTIONS`는 재생할 섹션 번호입니다.
+```python
+LINK = "https://lcme.ulsan.ac.kr/course/view.php?id=9175"
+SECTIONS = [1, 2, 3, 4, 5, 6, 7]
+```
+
+5. 프로그램을 실행합니다. 브라우저가 열리고 자동으로 영상을 재생합니다.
+```
+python autoplay.py
+```
+
+**주의사항:** Headless 모드는 지원하지 않습니다 (영상 플레이어가 작동하지 않음).
 
 ## 법적 고지
 저작권법 제30조에 의해, 공표된 저작물을 개인적으로 이용하거나 가정 및 이에 준하는 한정된 범위 안에서 이용하는 경우에는 저작물을 복제할 수 있습니다. 따라서 이 프로그램을 이용하여 다운로드한 동영상을 개인적으로 이용하는 것은 저작권법에 위배되지 않습니다. 그러나 다운로드한 동영상을 다른 사람에게 배포하거나 상업적인 목적으로 이용하는 것은 저작권법 제136조에 위배됩니다. 또한 저작권자가 다운로드를 금지하였을 때에는 민사적 문제가 발생할 수 있습니다.
