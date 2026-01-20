@@ -11,9 +11,9 @@ import requests
 
 
 # configs
-LINK = "https://lcme.ulsan.ac.kr/course/view.php?id=9096"
-SECTIONS = [4]
-SAVEPATH = "/Users/leesj/Documents/대학교/예과 2학년 1학기/세포와대사"
+LINK = "https://ulms.ulsan.ac.kr/course/view.php?id=40634"
+SECTIONS = [1, 2, 3, 4, 5, 6, 7]
+SAVEPATH = "/Users/leesj/Documents/대학교/예과 2학년/선택과정/병원 밖 진료실"
 
 # load environment variables
 load_dotenv()
@@ -29,34 +29,28 @@ driver.get(LINK)
 driver.implicitly_wait(2)
 
 # login
-driver.find_element(By.ID, "input-username").send_keys(login_id)
-driver.find_element(By.ID, "input-password").send_keys(login_pw)
-driver.find_element(By.XPATH, "//input[@type='submit']").send_keys(Keys.RETURN)
+driver.find_element(By.ID, "id").send_keys(login_id)
+driver.find_element(By.ID, "pw").send_keys(login_pw)
+driver.find_element(By.CSS_SELECTOR, ".login.btn-login").send_keys(Keys.RETURN)
 
 # for each specified section
 for i in SECTIONS:
     # get section XPATH and section name
     section = driver.find_element(By.ID, f"section-{i}")
-    section_name = section.find_element(By.XPATH, ".//div/h3/a").get_attribute("innerText")
+    section_name = section.find_element(By.XPATH, ".//h3[@class='sectionname']/span/a").get_attribute("innerText")
     os.makedirs(os.path.join(SAVEPATH, section_name), exist_ok=True)
 
     # get video list
-    video_list = []
-    j = 1
-    while True:
-        try:
-            video = section.find_element(By.XPATH, f".//div/ul/li[{j}]")
-            video_list.append(video)
-            j += 1
-        except:
-            break
+    video_list = section.find_elements(By.XPATH, ".//ul[@class='section img-text']/li[contains(@class, 'activity')]")
 
     # for each video in the list
     for video in video_list:
         # get video link and video name
         try:
-            video_link = video.find_element(By.XPATH, ".//div/div/div[2]/div/a").get_attribute("onclick").split("'")[1]
-            video_name = video.find_element(By.XPATH, ".//div/div/div[2]/div/a/span").get_attribute("innerText").replace("\nCMAKER", "")
+            link_element = video.find_element(By.XPATH, ".//div[@class='activityinstance']/a")
+            onclick_attr = link_element.get_attribute("onclick")
+            video_link = onclick_attr.split("'")[1]
+            video_name = link_element.find_element(By.XPATH, ".//span[@class='instancename']").get_attribute("innerText").replace(" CMAKER", "").strip()
         except:  # 학습자료 등이 있을 경우 예외처리
             continue
 
@@ -79,7 +73,7 @@ for i in SECTIONS:
 
         # get ssvideo url
         def process_browser_log_entry(entry):
-            response = json.loads(entry["message"])["message"]  
+            response = json.loads(entry["message"])["message"]
             return response
 
         browser_log = driver.get_log("performance")
